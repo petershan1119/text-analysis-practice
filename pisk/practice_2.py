@@ -151,7 +151,7 @@ collocations_corpus = Corpus20News_Collocations('/Users/sangwonhan/practices/pyt
 def head(stream, n=10):
     return list(itertools.islice(stream, n))
 
-def best_phrases(document_stream, top_n=1000, prune_at=50000):
+def best_phrases(document_stream, top_n=1000000, prune_at=1000000):
     np_counts = {}
     for docno, doc in enumerate(document_stream):
         if docno % 1000 == 0:
@@ -167,7 +167,7 @@ def best_phrases(document_stream, top_n=1000, prune_at=50000):
                 np_counts[np] = np_counts.get(np, 0) + 1
 
     sorted_phrases = sorted(np_counts, key=lambda np: -np_counts[np])
-    return set(head(sorted_phrases,top_n))
+    return set(head(sorted_phrases, top_n))
 
 fname = '/Users/sangwonhan/practices/python/text_analysis_practice/data/20news-bydate.tar.gz'
 
@@ -176,7 +176,8 @@ class Corpus20News_NE(object):
     def __init__(self, fname):
         self.fname = fname
         logging.info("collecting entities from %s" % self.fname)
-        doc_stream = itertools.islice(iter_20newsgroups(self.fname), 10000)
+        doc_stream = itertools.islice(iter_20newsgroups(self.fname), 1000)
+        # doc_stream = iter_20newsgroups(self.fname)
         self.entities = best_phrases(doc_stream)
         logging.info("selected %i entities: %s..." %
                      (len(self.entities), list(self.entities)[:10]))
@@ -199,11 +200,11 @@ class Corpus20News_NE(object):
                 # only consider multi-word phrases we detected in the constructor
                 continue
             token = u'_'.join(part for part in gensim.utils.tokenize(np) if len(part) > 2)
-            if len(token) < 4 or token in stopwords:
+            if len(token) < 2 or token in stopwords:
                 # ignore very short phrases and stop words
                 continue
             result.append(token)
         return result
 
-ne_corpus = Corpus20News_NE('./data/20news-bydate.tar.gz')
+ne_corpus = Corpus20News_NE(fname)
 print(head(ne_corpus, 5))

@@ -1,6 +1,6 @@
 *.tar.gz
 *.xml.bz2
-
+data/
 
 # Created by https://www.gitignore.io/api/git,macos,python,pycharm+all
 
